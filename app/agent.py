@@ -1,11 +1,12 @@
 from google.cloud import dialogflow
-from app.products.product_info import *
-from app.products.store_info import *
+from app.store_product.product_info import *
+from app.store_product.store_info import *
 from app.concerns.other_concern import *
 import random
 import sys
 
-class Bot:
+PROJECT_ID = "grocery-chat-bot-v1"
+class Agent:
     """
     This the main bot class that handles conversation with users.
 
@@ -21,7 +22,6 @@ class Bot:
         undetected_intent_count: keep track of times the intent is not detected
     """
     def __init__(self):
-        project_id = "grocery-chat-bot"
         #generate unique session id for each conversation. 
         # Session id is for continuation of conversation
         #TODO: create unique number
@@ -29,7 +29,7 @@ class Bot:
         #one session is only for one customer
         self.session_client = dialogflow.SessionsClient()
         self.language_code = "en-US"
-        self.session = self.session_client.session_path(project_id, self.session_id)
+        self.session = self.session_client.session_path(PROJECT_ID, self.session_id)
         self.intents = {}
         self.undetected_intent_count = 0
 
@@ -153,6 +153,6 @@ class Bot:
         #If intent cannot be detected or customer has further concerns, direct it to the other concerns handler. Handler returns a response to user question.
         else:
             if("other-concerns" not in self.intents):     
-                self.intents["other-concerns"] = OtherConcerns() 
+                self.intents["other-concerns"] = OtherConcernsHandler() 
             response = self.intents["other-concerns"].handle(kwargs["sentimentScore"], kwargs["intent"])
         return response

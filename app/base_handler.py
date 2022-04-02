@@ -1,6 +1,6 @@
 from abc import abstractmethod
 import os
-from app.database import DatabaseType, Database
+from app.database import Database
 
 
 class BaseHandler:

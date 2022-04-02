@@ -1,10 +1,10 @@
-from app.bot import Bot
+from app.agent import Agent
 # from dialogflow_migration.bot import Bot
 
 def main():
-    bot = Bot()
+    agent = Agent()
     #initiate conversation with customer
-    bot.start_conversation()
+    agent.start_conversation()
 
 
 if __name__ == '__main__':

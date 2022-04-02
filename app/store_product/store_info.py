@@ -1,5 +1,5 @@
 from app.database import STORE_INFO
-from app.products.base_handler import BaseHandler
+from app.base_handler import BaseHandler
 import re
 
 

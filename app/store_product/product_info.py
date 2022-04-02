@@ -1,6 +1,6 @@
 from app.database import MOCK_PRODUCT_DATA
 import re
-from app.products.base_handler import BaseHandler
+from app.base_handler import BaseHandler
 
 
 class ProductInfoHandler(BaseHandler):
