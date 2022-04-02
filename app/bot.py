@@ -153,6 +153,6 @@ class Agent:
         #If intent cannot be detected or customer has further concerns, direct it to the other concerns handler. Handler returns a response to user question.
         else:
             if("other-concerns" not in self.intents):     
-                self.intents["other-concerns"] = OtherConcerns() 
+                self.intents["other-concerns"] = OtherConcernsHandler() 
             response = self.intents["other-concerns"].handle(kwargs["sentimentScore"], kwargs["intent"])
         return response
