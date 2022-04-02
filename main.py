@@ -1,4 +1,4 @@
-from app.bot import Agent
+from app.agent import Agent
 # from dialogflow_migration.bot import Bot
 
 def main():

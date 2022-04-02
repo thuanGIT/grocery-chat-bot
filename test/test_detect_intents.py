@@ -1,5 +1,5 @@
 import pytest
-from app.bot import Agent
+from app.agent import Agent
 from google.cloud import dialogflow
 
 @pytest.mark.intent_detection
