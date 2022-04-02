@@ -1,6 +1,6 @@
 import pytest
 from app.database import MOCK_PRODUCT_DATA, Database, DatabaseType
-from app.products.product_info import ProductInfoHandler
+from app.store_product.product_info import ProductInfoHandler
 from datetime import datetime, timezone
 
 class ConvertUtilities:

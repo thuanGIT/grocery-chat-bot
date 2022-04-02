@@ -1,5 +1,5 @@
 import pytest
-from app.products.store_info import StoreInfoHandler
+from app.store_product.store_info import StoreInfoHandler
 from app.database import STORE_INFO
 
 @pytest.mark.store_info

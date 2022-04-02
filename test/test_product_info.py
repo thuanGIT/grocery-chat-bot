@@ -1,5 +1,5 @@
 import pytest
-from app.products.product_info import ProductInfoHandler
+from app.store_product.product_info import ProductInfoHandler
 from app.database import MOCK_PRODUCT_DATA
 @pytest.mark.prod_info
 
