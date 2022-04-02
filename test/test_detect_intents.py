@@ -1,5 +1,5 @@
 import pytest
-from app.bot import Bot
+from app.bot import Agent
 from google.cloud import dialogflow
 
 @pytest.mark.intent_detection
@@ -7,7 +7,7 @@ class TestIntentRouting:
 
     @pytest.fixture
     def bot(self):
-        return Bot()
+        return Agent()
 
     def test_detect_intent_texts(self,bot):
         assert bot.detect_intent_texts("hello").intent.display_name == "Default Welcome Intent", "Default Welcome Intent failed"

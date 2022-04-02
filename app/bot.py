@@ -5,7 +5,7 @@ from app.concerns.other_concern import *
 import random
 import sys
 
-class Bot:
+class Agent:
     """
     This the main bot class that handles conversation with users.
 
