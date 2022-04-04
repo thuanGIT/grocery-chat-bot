@@ -10,6 +10,6 @@ RUN pip3 install -r requirements.txt
 
 ADD ./ ./
 
-CMD [ "app:app" ]
+CMD [ "main:app" ]
 
 ENTRYPOINT [ "gunicorn" ]
