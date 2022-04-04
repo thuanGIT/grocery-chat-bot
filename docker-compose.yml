@@ -1,0 +1,48 @@
+version: '1.0.0'
+author:
+  - "Thuan Vo (@thuanGIT)"
+services:
+  gunicorn: # Backend as a service (Gunicorn)
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    image: gunicorn
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=./dialogflow_key.json
+      - PORT=8080
+    volumes:
+      - ./:/app
+    depends_on:
+      - postgres
+    ports:
+      - "8080:8080"
+    expose:
+      - 8080
+    networks:
+      grocery_store_network:
+        aliases:
+          - gunicorn
+  postgres: # Database (PostgreSQL)
+    image: postgres:14.2
+    environment:
+      - POSTGRES_USER=sysadmin
+      - POSTGRES_PASSWORD=sysadmin#!__030422__$$
+      - POSTGRES_DB=init_store
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    networks:
+      grocery_store_network:
+        aliases:
+          - database
+
+volumes:
+  postgres-db:
+
+networks:
+  grocery_store_network:
+    driver: bridge
+    name: grocery_store_network
