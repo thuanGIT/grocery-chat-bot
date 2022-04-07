@@ -18,7 +18,7 @@ Here's the directory structure of the utilities package.
 |- README.md           
 ```
 
-## Google Maps Utitility
+## Google Maps Utility
 
 In some scenarios, a user can query the agent for the locations or directions to the grocery stores. While there are many third-party APIs for these functionalities, our team chose GoogleMaps API for its simplicity and ability for scaling.
 
@@ -70,7 +70,7 @@ path_str = gm_direction.get_direction_path(
 
 ### GoogleMapGeocoding
 
-The wrapper class `GoogleMapGeoCoding` gives a quick way to convert adress name into a coordinates composed of a lattitude, and a longtitude. This class also supports the reverse operation (i.e. from coordinates to address name.
+The wrapper class `GoogleMapGeoCoding` gives a quick way to convert address name into a coordinates composed of a latitude, and a longitude. This class also supports the reverse operation (i.e. from coordinates to address name).
 
 #### Usage
 
@@ -128,7 +128,7 @@ Log.c(TAG, "My message") # Logging critical case
 
 ## Natural Language Utility
 
-The languages provide support for common operations on natural languague (i.e. word forms, grammars). Currently, we are only supporting **English** and **singular <-> plural** noun operations with the help of `inflect` library.
+The languages provide support for common operations on natural language (i.e. word forms, grammars). Currently, we are only supporting **English** and **singular <-> plural** noun operations with the help of `inflect` library.
 
 We hope to work on other languages and functionalities in the future.
 
@@ -158,7 +158,7 @@ EnglishUtil.to_singular(noun) # Return "banana"
 - [Google Maps Static API](https://developers.google.com/maps/documentation/maps-static)
 - [Google Directions API](https://developers.google.com/maps/documentation/directions?hl=en_US)
 - [Google Geocoding API](https://developers.google.com/maps/documentation/geocoding)
-- [Wolfram|Alpham Short Answers API](https://products.wolframalpha.com/short-answers-api/documentation/)
+- [Wolfram|Alpha Short Answers API](https://products.wolframalpha.com/short-answers-api/documentation/)
 - [Python logging](https://docs.python.org/3/library/logging.html#module-logging)
 - [inflect 5.5.2](https://pypi.org/project/inflect/)
 
