@@ -1,5 +1,6 @@
+from http.client import HTTPException
 from app.agent import Agent
-from flask import Flask, jsonify
+from flask import Flask, jsonify, abort
 from datetime import datetime
 from app.utilities.logs import Log
 
@@ -33,10 +34,16 @@ def receive_message(session_id):
 
     # TODO: Get the agent to process message
   except Exception as e:
-    Log.e(app.config["TAG"], "No agent found!") # No agent found
-    return jsonify({"error": "Bad Request!"}), 400
+    if e is HTTPException:
+      raise e
+    Log.e(app.config["TAG"], str(e))
+    abort(400)
     
     
 @app.errorhandler(500)
 def handle_server_error(e):
   return {}, 500
+
+@app.errorhandler(400)
+def handle_client_error(e):
+  return jsonify({"error": "Bad Request!"}), 400
