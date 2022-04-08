@@ -37,3 +37,6 @@ def receive_message(session_id):
     return jsonify({"error": "Bad Request!"}), 400
     
     
+@app.errorhandler(500)
+def handle_server_error(e):
+  return {}, 500
