@@ -17,7 +17,10 @@ def init_conversation():
   # Logging
   Log.d(app.config["TAG"], f"Conversation id#{session_id} is initialized")
 
-  return jsonify({"session_id": session_id, "status":"OK"})
+  return jsonify({
+    "session_id": session_id,
+    "welcome_message": "Hello, welcome to the official chatbot of The Store. How can I help you today?"
+    })
 
 @app.route("/<session_id>")
 def receive_message(session_id):
