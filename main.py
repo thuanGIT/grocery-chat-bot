@@ -6,14 +6,13 @@ from app.utilities.logs import Log
 # Create a flask app
 app = Flask(__name__)
 app.config["TAG"] = "Flask App"
-app.config["SESSIONS"] = set()
-app.config["AGENT"] = Agent()
+app.config["AGENTS"] = dict()
 
 @app.route("/")
 def init_conversation():
   # Create a unique identifier
   session_id = str(datetime.now()).encode("utf-8").hex()
-  app.config["SESSIONS"].add(session_id)
+  app.config["AGENTS"][session_id] = Agent(session_id=session_id)
 
   # Logging
   Log.d(app.config["TAG"], f"Conversation id#{session_id} is initialized")
@@ -22,5 +21,16 @@ def init_conversation():
 
 @app.route("/<session_id>")
 def receive_message(session_id):
-  # TODO: Get the agent to process message
-  ...
+  try:
+    # Get the agent
+    agent = app.config["AGENTS"][session_id]
+
+    # Logging
+    Log.i(app.config["TAG"], "Agent found!")
+
+    # TODO: Get the agent to process message
+  except Exception as e:
+    Log.e(app.config["TAG"], "No agent found!") # No agent found
+    return jsonify({"error": "Bad Request!"}), 400
+    
+    
