@@ -1,35 +1,41 @@
-from google.cloud import dialogflow
-from app.store_product.product_info import *
-from app.store_product.store_info import *
-from app.concerns.other_concern import *
-import random
 import sys
+import os
+from google.cloud import dialogflow
+from app.store_product.product_info import ProductInfoHandler
+from app.store_product.store_info import StoreInfoHandler
+from app.concerns.other_concern import OtherConcernsHandler
+from app.error import DialogFlowException
+from app.utilities.logs import Log
 
-PROJECT_ID = "grocery-chat-bot-v1"
+# Define the project id
+PROJECT_ID = os.getenv("PROJECT_ID")
 class Agent:
-    """
-    This the main bot class that handles conversation with users.
-
-    Parameters: None
-
-    Attributes: 
-        project_id: google project id of the agent
-        session_id: unique session id for each conversation
+    """The main agent to facilitate the conversation with customers. Its backend is set up
+    with mini-agents and Diagflow API.
+    
+    Attributes:
+        session_id: Unique session id for each conversation
         session_client: session client object for dialogflow
-        language_code: language code for dialogflow, initially set to en-US
+        language_code: language code for dialogflow, default to en-US
         session: session path for dialogflow
         intents: dictionary of current intents the bot handles
         undetected_intent_count: keep track of times the intent is not detected
     """
-    def __init__(self):
-        #generate unique session id for each conversation. 
-        # Session id is for continuation of conversation
-        #TODO: create unique number
-        self.session_id = random.randint(1, 100)
-        #one session is only for one customer
+    # Log TAG
+    __TAG = __name__
+
+    def __init__(self, session_id, language_code="en-US"):
+        # Custom session id for continuation of conversation
+        self.session_id = session_id
+
+        # Only one session client for one customer
         self.session_client = dialogflow.SessionsClient()
-        self.language_code = "en-US"
+
+        # Get the qualified session string (id)
         self.session = self.session_client.session_path(PROJECT_ID, self.session_id)
+
+        # Configurations
+        self.language_code = language_code
         self.intents = {}
         self.undetected_intent_count = 0
 
@@ -100,29 +106,35 @@ class Agent:
             # continue the conversation
             print("Bot: What else can I help you?")   
     
-    def detect_intent_texts(self,text):
-        """
-        Takes user input and makes a request to dialogflow api to detect intent.
+    def detect_intent_texts(self, message):
+        """Detect intent with DialogFlow API for the current message.
 
-        Parameters:
-            text: user input
+        Args:
+            message (str): The user's message
 
-        Returns: query_result from json object received from dialogflow
+        Raises:
+            DialogFlowException: "Dialogflow API error" if cannot connect to dialogflow
 
-        Raises: exception with text "Dialogflow API error" if cannot connect to dialogflow
+        Returns:
+            QueryResult: The query result from DialogFlow API
         """
         try:
             # Process text_input
-            text_input = dialogflow.TextInput(text=text, language_code=self.language_code)
+            text_input = dialogflow.TextInput(text=message, language_code=self.language_code)
+            
             # Call Dialogflow API
             query_input = dialogflow.QueryInput(text=text_input)
 
             response = self.session_client.detect_intent(
                 request={"session": self.session, "query_input": query_input}
             )
+
+            # Logging
+            Log.i(Agent.__TAG, "DialogFlow API call succeeded!")
             return response.query_result
         except:
-            raise Exception("Dialogflow API error")
+            Log.e(Agent.__TAG, "DialogFlow API call failed!")
+            raise DialogFlowException("Dialogflow API error")
 
     #Based on intent, route to appropriate handler and return response for user input.
     def route_to_handler(self, **kwargs):
