@@ -1,6 +1,7 @@
 import sys
 import os
 from google.cloud import dialogflow
+from flask import abort
 from app.store_product.product_info import ProductInfoHandler
 from app.store_product.store_info import StoreInfoHandler
 from app.concerns.other_concern import OtherConcernsHandler
@@ -19,7 +20,7 @@ class Agent:
         language_code: language code for dialogflow, default to en-US
         session: session path for dialogflow
         intents: dictionary of current intents the bot handles
-        undetected_intent_count: keep track of times the intent is not detected
+        tolerant_count: Counts of undetected intents
     """
     # Log TAG
     __TAG = __name__
@@ -37,77 +38,49 @@ class Agent:
         # Configurations
         self.language_code = language_code
         self.intents = {}
-        self.undetected_intent_count = 0
 
-    def start_conversation(self):
+    def process(self, message):
+        """Process the user message and return the response message.
+
+        Args:
+            message (str): The user message
+
+        Raises:
+            HttpException: An error occurs during processing (aborting with code 500)
+
+        Returns:
+            dict: The json to return to client
         """
-        Initiate conversation with user and maintain the conversation until user says bye.
-        For each user input, detect intent and route to appropriate handler.
+        try:
+            # Call DiagFlow API
+            query_result = self.detect_message_intent(message=message)
+            Log.i(Agent.__TAG, "Dialogflow API call succeeded!")
 
-        Parameters: None
+            # Get the intent's display name
+            intent = str(query_result.intent.display_name)
 
-        Returns: None
-        """
-        print("""Bot: Hello, welcome to the official chatbot of Walmart. \nHere you can find information about our store, products \nand resolve any further concerns you have. \nHow can I help you today?""")
-        #continuously take in user input (or maintain the conversation) 
-        #until the user ends
-        while True:
-            user_input = input("You: ")
-            #if user input is empty, prompt the input again
-            if(not user_input):
-                print("Bot: How can I help you?")
-                continue
-            #call dialogflow API to detect intent. If there is error, stop the program
-            try:
-                response = self.detect_intent_texts(user_input)
-            except:
-                print("Bot: There is an error on our end. Please try again later.")
-                sys.exit()
-            intent = response.intent.display_name            
-            # if user greets (such as "hello"), then greet the user
-            if(intent == "Default Welcome Intent"):
-                print("Bot: " + response.fulfillment_text)
-                continue
-            # if user ends the conversation (such as "bye"), 
-            # then end the conversation
-            elif(intent == "Done-conversation"):
-                print("Bot: Such a great pleasure to help you. Have a great day!")
-                sys.exit()
-            # if user asks about product, 
-            # pass to store-info in route_to_handle. 
-            # Set the undetected intent count to 0
-            elif("product" in intent):# intent can be product-stock or product-nutrition or product-price
-                productName = response.parameters["product-name"]
-                print("Bot: " + self.route_to_handler(productName = productName, intent = intent))
-                self.undetected_intent_count = 0 # reset the undetected intent count if bot already responded the intent
-            # if user asks about store, 
-            # pass to store-info in route_to_handle. 
-            # Set the undetected intent count to 0
-            elif(intent == "store-info"):
-                print("Bot: " + self.route_to_handler(intent = intent, user_input = user_input))
-                self.undetected_intent_count = 0 # reset the undetected intent count if bot already responded the intent
-            # if user asks for exchange or refund or feedback, 
-            # direct to other concerns handler in route_to_handle
-            elif(intent == "exchange-request" or intent == "refund-request" or intent == "feedback"):
-                    self.route_to_handler(sentimentScore = response.sentiment_analysis_result.query_text_sentiment.score, intent = intent)
-                    self.undetected_intent_count = 0 # reset the undetected intent count if bot already responded the intent
-            # if the bot doesn't understand the user intent, 
-            # then ask for rephrase and increment the undetected intent count
-            # if the bot doesn't understand the user intent for 3 times,
-            # then set sentiment score to 0 and pass to other concerns handler in route_to_handle               
-            else:    
-                self.undetected_intent_count += 1
-                if(self.undetected_intent_count == 3):
-                    self.route_to_handler(sentimentScore = 0, intent = intent)
-                    self.undetected_intent_count = 0 # reset the undetected intent count if bot already responded the intent
-                else:
-                    print("Bot: " + response.fulfillment_text)
-                    continue
-            # continue the conversation
-            print("Bot: What else can I help you?")   
+            # Prepare the json response
+            json_res = {"response_message": ""}
+
+            # TODO: Add mini-agent to handle business logics
+            # If conversation is starting | ending | inable to understand
+            if intent.startswith("default"): 
+                json_res["response_message"] = query_result.fulfillment_messages[0].text.text
+            elif intent.startswith("store"):
+                json_res["response_message"] = ""
+            elif intent.startswith("product"):
+                json_res["response_message"] = ""
+            else: 
+                Log.d(Agent.__TAG, "Unknow intent")
+                raise DialogFlowException("Unknown intent")
+            return json_res
+        except Exception as e:
+            Log.e(Agent.__TAG, "Dialogflow API call failed:", str(e))
+            abort(500)
+        
     
-    def detect_intent_texts(self, message):
-        """Detect intent with DialogFlow API for the current message.
+    def detect_message_intent(self, message):
+        """Detect intent with Dialogflow API for the current message.
 
         Args:
             message (str): The user's message
@@ -116,7 +89,7 @@ class Agent:
             DialogFlowException: "Dialogflow API error" if cannot connect to dialogflow
 
         Returns:
-            QueryResult: The query result from DialogFlow API
+            QueryResult: The query result from Dialogflow API
         """
         try:
             # Process text_input
@@ -128,43 +101,7 @@ class Agent:
             response = self.session_client.detect_intent(
                 request={"session": self.session, "query_input": query_input}
             )
-
-            # Logging
-            Log.i(Agent.__TAG, "DialogFlow API call succeeded!")
             return response.query_result
-        except:
-            Log.e(Agent.__TAG, "DialogFlow API call failed!")
+        except Exception:
             raise DialogFlowException("Dialogflow API error")
 
-    #Based on intent, route to appropriate handler and return response for user input.
-    def route_to_handler(self, **kwargs):
-        """
-        Takes intent name and necessary parameters and routes to appropriate handler.
-        Handlers include: product-info, store-info, other-concerns.
-
-        Parameters:
-            intent: name of intent
-            productName: name of product. Only required if intent is about product
-            user_input: user input. Only required if intent is about store
-        
-        Returns: text response from handlers
-        """
-        #If the question is about (detected intent) product info, direct it to the product information handler. Handler returns a response to user question. 
-        #If the intent is not currently handled by the bot, create a new intent for it.
-        if("product" in kwargs["intent"]):
-            if("product-info" not in self.intents):
-                self.intents["product-info"] = ProductInfoHandler()
-            response = self.intents["product-info"].handle(kwargs["productName"], kwargs["intent"])
-
-        #If the question is about (detected intent) product info, direct it to the product information handler. Handler returns a response to user question. 
-        elif("store" in kwargs["intent"]):
-            if("store-info" not in self.intents):
-                self.intents["store-info"] = StoreInfoHandler()
-            response = self.intents["store-info"].handle(kwargs["user_input"])
-
-        #If intent cannot be detected or customer has further concerns, direct it to the other concerns handler. Handler returns a response to user question.
-        else:
-            if("other-concerns" not in self.intents):     
-                self.intents["other-concerns"] = OtherConcernsHandler() 
-            response = self.intents["other-concerns"].handle(kwargs["sentimentScore"], kwargs["intent"])
-        return response
