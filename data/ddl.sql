@@ -19,26 +19,15 @@ CREATE TABLE Product (
    Category      VARCHAR(50),
    ListPrice     DECIMAL(9, 2),
    InStock       BOOLEAN       NOT NULL,
-   PRIMARY KEY (ProductId),
+   PRIMARY KEY (ProductId)
 );
 
--- Will use WikiAPI to get these values
--- CREATE TABLE Nutrition (
---    ProductId     CHAR(5)    NOT NULL,
---    Calories INT,
---    Protein VARCHAR(10),
---    Carbs VARCHAR(10),
---    Sugar VARCHAR(10),
---    Fat VARCHAR(10),
--- );
-
-
 CREATE TABLE Concern (
-   SessionId CHAR(10)         NOT NULL, 
-   PhoneNumber CHAR(10)       NOT NULL, 
-   Description VARCHAR(1000)  NOT NULL, 
-   DateCreated DATETIME       NOT NULL,
-   Status CHAR(9)             NOT NULL CHECK (Status IN ('open', 'closed', 'cancelled')),
+   SessionId   CHAR(10)          NOT NULL, 
+   PhoneNumber CHAR(10)          NOT NULL, 
+   Description VARCHAR(1000)     NOT NULL, 
+   DateCreated TIMESTAMP         NOT NULL,
+   Status CHAR(9)                NOT NULL CHECK (Status IN ('open', 'closed', 'cancelled')),
    PRIMARY KEY (SessionId)
 );
 
@@ -59,7 +48,7 @@ CREATE TABLE Customer (
 
 CREATE TABLE Orders (
    OrderId       CHAR(5)    NOT NULL,
-   OrderDate     DATETIME,
+   OrderDate     TIMESTAMP,
    CustomerId    CHAR(5),
    EmployeeId    CHAR(5),
    Total         DECIMAL(9,2),
