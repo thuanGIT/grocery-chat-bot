@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_DB: storedb
       POSTGRES_USER: sysadmin
-      POSTGRES_PASSWORD: 'sysadmin#!__030422__$$'
+      POSTGRES_PASSWORD: 'sysadmin030422'
     volumes:
       - postgres-db:/var/lib/postgresql/data
     expose:
