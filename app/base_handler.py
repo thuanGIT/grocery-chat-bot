@@ -11,5 +11,8 @@ class BaseHandler:
         self.db = Database.instance(session_id=session_id)
         self.db.connect()
 
+    def dispose(self):
+        self.db.close()
+
     @abstractmethod
     def handle(self, **kwargs) -> str: ...
