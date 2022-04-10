@@ -9,7 +9,7 @@ class StoreInfoHandler(BaseHandler):
     def __init__(self) -> None:
         super().__init__()
 
-    def handle(self, **kwargs) -> str:
+    def handle(self, **kwargs):
         # Get the intent name & parameters
         intent_name = str(kwargs["intent"])
         params = kwargs["params"]
