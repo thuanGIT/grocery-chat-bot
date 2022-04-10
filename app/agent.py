@@ -37,7 +37,12 @@ class Agent:
 
         # Configurations
         self.language_code = language_code
-        self.intents = {}
+
+        # Handlers
+        self.handler_map = {
+            "store": StoreInfoHandler(),
+            "product": ProductInfoHandler()
+        }
 
     def process(self, message):
         """Process the user message and return the response message.
@@ -62,14 +67,19 @@ class Agent:
             # Prepare the json response
             json_res = {"response_message": ""}
 
-            # TODO: Add mini-agent to handle business logics
+            # Mini-agent to handle business logics
             # If conversation is starting | ending | inable to understand
+            kwargs = {
+                "intent": intent,
+                "params": query_result.parameters
+            }
             if intent.startswith("default"): 
                 json_res["response_message"] = query_result.fulfillment_messages[0].text.text
             elif intent.startswith("store"):
-                json_res["response_message"] = ""
+                # Set up configurations
+                json_res["response_message"] = self.handler_map["store"].handle(**kwargs)
             elif intent.startswith("product"):
-                json_res["response_message"] = ""
+                json_res["response_message"] = self.handler_map["product"].handle(**kwargs)
             else: 
                 Log.d(Agent.__TAG, "Unknow intent")
                 raise DialogFlowException("Unknown intent")
