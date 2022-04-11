@@ -33,6 +33,8 @@ class Database:
     def connect(self):
         """Connect to the database.
         """
+        if self.conn:
+            return # No need to connect again
         # Get configurations
         config = self.get_config()
         # Connect
@@ -42,9 +44,10 @@ class Database:
     def close(self):
         """Close the connection to the database.
         """
-        self.conn.close()
-        self.conn = None
-        Log.i(Database.__TAG, f"Connection #{self.session_id} closed.")
+        if self.conn: # No need to close if already closed
+            self.conn.close()
+            self.conn = None
+            Log.i(Database.__TAG, f"Connection #{self.session_id} closed.")
     
     def execute(self, sql_string):
         """Execute an SQL statement.
