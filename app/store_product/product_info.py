@@ -2,9 +2,13 @@ from math import prod
 from app.base_handler import BaseHandler
 from app.error import SQLException
 from app.utilities.wolfram_alpha import NutritionQuery
+from app.utilities.languages.en import EnglishUtil
+from app.utilities.logs import Log
 class ProductInfoHandler(BaseHandler):
     """A class used to represent a mini-agent to handle product queries.
     """
+
+    __TAG = __name__
 
     def __init__(self, session_id) -> None:
         super().__init__(session_id=session_id)
@@ -28,6 +32,9 @@ class ProductInfoHandler(BaseHandler):
 
         # Get the product name
         product = str(params["product"]).capitalize()
+        if EnglishUtil.is_plural(product):
+            product = EnglishUtil.to_singular(product)
+        Log.d(ProductInfoHandler.__TAG, "Product: " + product)
         if sub_intent == "nutrition":
             # Get an API instance
             image = NutritionQuery.instance().get_nutritional_fact(product=product)
