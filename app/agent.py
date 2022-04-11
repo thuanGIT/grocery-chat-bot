@@ -15,7 +15,7 @@ class Agent:
     # Log TAG
     __TAG = __name__
 
-    def __init__(self, session_id, language_code="en-US"):
+    def __init__(self, session_id: str, clean_up, language_code="en-US"):
         # Custom session id for continuation of conversation
         self.session_id = session_id
 
@@ -25,6 +25,9 @@ class Agent:
             "product": ProductInfoHandler(session_id=session_id),
             "feedback": FeedbackHandler(session_id=session_id)
         }
+        
+        # Register a clean up function
+        self.clean_up = clean_up
 
     def process(self, query_result):
         """Process the query json.
@@ -65,7 +68,8 @@ class Agent:
                 sub_intent = intent_name[intent_name.index(".") + 1:]
                 if sub_intent == "done":
                     for _, handler in self.handler_map.items():
-                        handler.dispose()
+                        handler.dispose() # Dispose all handlers
+                        self.clean_up(self.session_id) # Dispose the agent itself
                 response = query_result["fulfillmentMessages"][0]["text"]["text"]
             elif intent_name.startswith("store"):
                 response = self.handler_map["store"].handle(**kwargs)

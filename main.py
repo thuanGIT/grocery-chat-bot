@@ -23,7 +23,7 @@ def webhook():
     # Get the sessions
     session_id = str(request.json["session"]).split("/")[-1]
     # Get the agent
-    agent = app.config["AGENTS"].setdefault(session_id, Agent(session_id=session_id))
+    agent = app.config["AGENTS"].setdefault(session_id, Agent(session_id=session_id, clean_up=clean_up_agent))
     # Process the request json and return the response
     return agent.process(request.json["queryResult"])
   else:
@@ -44,3 +44,8 @@ def handle_server_error(e):
 def handle_client_error(e):
   Log.e(app.config["TAG"], str(e))
   return jsonify({"error": "Bad Request!"}), 400
+
+def clean_up_agent(session_id):
+  if session_id in app.config["AGENTS"].keys():
+    app.config["AGENTS"].pop(session_id)
+    Log.d(app.config["TAG"], "Removing agent #" + session_id)
