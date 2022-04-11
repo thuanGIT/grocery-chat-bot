@@ -24,7 +24,7 @@ class ProductInfoHandler(BaseHandler):
             return "No information yet. Sorry..."
 
         # Get the product name
-        product = params["product"]
+        product = str(params["product"]).capitalize()
         if sub_intent == "nutrition":
             # Get an API instance
             image = NutritionQuery.instance().get_nutritional_fact(product=product)
@@ -50,7 +50,7 @@ class ProductInfoHandler(BaseHandler):
         Returns:
             float: Price of the product
         """
-        result = self.db.execute(f"SELECT ListPrice FROM Product WHERE ProductName = f{product}")
+        result = self.db.execute(f"SELECT ListPrice FROM Product WHERE ProductName = '{product}'")
         if len(result) > 0:
             return list(result)[0][0]
         else:
@@ -64,7 +64,7 @@ class ProductInfoHandler(BaseHandler):
         Returns:
             bool: Whether the product is still in stock
         """
-        result = self.db.execute(f"SELECT InStock FROM Product WHERE ProductName = f{product}")
+        result = self.db.execute(f"SELECT InStock FROM Product WHERE ProductName = '{product}'")
         if len(result) > 0:
             return list(result)[0][0]
         else:
