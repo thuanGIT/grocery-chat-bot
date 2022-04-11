@@ -1,12 +1,13 @@
 from app.base_handler import BaseHandler;
 
 class OtherConcernsHandler(BaseHandler):
-    """
-    This class contains methods that handle all questions that relate to exchanges and refunds or any other questions that are not related to store or product information,.
-    It also handles cases when the bot is unable to understand what the user types.
-    It analyzes the sentiment score from the dialogflow api and outputs a response according to whether the user's text denotes a positive or negative sentiment.
-    Attributes: None
-    """
+
+    def __init__(self, session_id):
+        super().__init__(session_id)
+
+    def handle(self, **kwargs):
+        
+        ...
 
     def handle(self, sentimentNum, intent): 
         """
@@ -58,12 +59,7 @@ class OtherConcernsHandler(BaseHandler):
                     else:
                         print("Bot: Here is our customer service number:416-555-1234\n You can contact this number and our customer service agents will assist you.")
     
-    def handle(self, message): ...
     
-    def parse(self, message: str) -> dict: ...
-
-    def create_match_paterns(self) -> None: ...
-
     def handleExchange(self):
         """
         Handles requests for exchanges
