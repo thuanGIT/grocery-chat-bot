@@ -1,7 +1,8 @@
-from pytest import param
+from datetime import datetime
 from app.base_handler import BaseHandler
 from app.error import SQLException
 from app.utilities.google_map import GoogleMapDirection, GoogleMapStatic, GoogleMapGeoCoding
+from app.utilities.logs import Log
 
 class StoreInfoHandler(BaseHandler):
     """A class used to represent a mini-agent to handle store queries.
@@ -103,7 +104,8 @@ class StoreInfoHandler(BaseHandler):
         # Call the method to the encoded path to draw on a static map image.
         path_str = gm_direction.get_direction_path(
             source, 
-            self.get_address(), 
+            self.get_address(),
+            departure_time=datetime.now(),
             mode="driving")
 
         # Decode source address
