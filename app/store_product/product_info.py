@@ -19,7 +19,10 @@ class ProductInfoHandler(BaseHandler):
 
         # Check if product param is available and the sub-intent is not exchange_refund
         if sub_intent == "exchange_refund":
-            return "..."
+            # Get the store phone number and website
+            website = list(self.db.execute("SELECT Website FROM Store;"))[0][0]
+            phone_num = list(self.db.execute("SELECT PhoneNumber FROM Store;"))[0][0]
+            return f"Please contact our agent at {phone_num} or {website}"
         elif "product" not in params.keys():
             return "No information yet. Sorry..."
 
