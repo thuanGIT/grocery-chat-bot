@@ -1,5 +1,31 @@
 version: "3.8"
 services:
+  webhook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: webhook:latest
+    container_name: webhook
+    environment:
+      WOLFRAM_API_KEY: "$WOLFRAM_API_KEY"
+      MAP_API_KEY: "$MAP_API_KEY"
+      PROJECT_ID: "grocery-chat-bot-v1"
+      POSTGRES_USER: sysadmin
+      POSTGRES_PASSWORD: sysadmin030422
+      POSTGRES_HOSTNAME: database
+      POSTGRES_DB: storedb
+      AUTH_USER: "$AUTH_USER"
+      AUTH_PASSWORD: "$AUTH_PASSWORD"
+    ports:
+      - 8080:80
+    expose:
+      - 80
+    volumes:
+      - ./:/app
+    networks:
+      grocery_store_network:
+        aliases:
+          - webhook
   postgres: # Database (PostgreSQL)
     image: postgres:14
     container_name: postgres_database
