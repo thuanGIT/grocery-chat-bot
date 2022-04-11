@@ -61,8 +61,12 @@ class Agent:
             }
 
             response = None
-            if intent_name.startswith("default"): 
-                response = query_result.fulfillment_messages[0].text.text
+            if intent_name.startswith("default"):
+                sub_intent = intent_name[intent_name.index(".") + 1:]
+                if sub_intent == "done":
+                    for _, handler in self.handler_map.items():
+                        handler.dispose()
+                response = query_result["fulfillmentMessages"][0].text.text
             elif intent_name.startswith("store"):
                 response = self.handler_map["store"].handle(**kwargs)
             elif intent_name.startswith("product"):
