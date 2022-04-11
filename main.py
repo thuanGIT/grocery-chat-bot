@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, abort, request
+from flask import Flask, jsonify, abort, request, send_file
 from app.agent import Agent
 from app.utilities.logs import Log
 import base64
@@ -28,7 +28,13 @@ def webhook():
     return agent.process(request.json["queryResult"])
   else:
     abort(400)
-    
+  
+@app.route("/image/<session_id>", methods=["GET"])
+def get_image(session_id):
+  Log.d(app.config["TAG"], "Getting images")
+  path = f"/tmp/image_{session_id}.png"
+  return send_file(path)
+
 @app.errorhandler(500)
 def handle_server_error(e):
   Log.e(app.config["TAG"], str(e))

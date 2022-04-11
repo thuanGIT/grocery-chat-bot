@@ -1,6 +1,6 @@
 import os
 from app.others.feedback_handler import FeedbackHandler
-from flask import abort
+from flask import abort, url_for, request
 from app.store_product.product_info import ProductInfoHandler
 from app.store_product.store_info import StoreInfoHandler
 from app.error import DialogFlowException
@@ -45,11 +45,11 @@ class Agent:
             # Prepare the json response
             json_res = {
                 "fulfillmentMessages": [
-                {
-                    "text": {
-                        "text": []
+                    {
+                        "text": {
+                            "text": []
+                        }
                     }
-                }
                 ]
             }
 
@@ -59,20 +59,50 @@ class Agent:
                 "intent": intent_name,
                 "params": query_result["parameters"]
             }
+
+            response = None
             if intent_name.startswith("default"): 
-                json_res["fulfillmentMessages"][0]["text"]["text"].append(query_result.fulfillment_messages[0].text.text)
+                response = query_result.fulfillment_messages[0].text.text
             elif intent_name.startswith("store"):
-                # Set up configurations
-                json_res["fulfillmentMessages"][0]["text"]["text"].append(self.handler_map["store"].handle(**kwargs))
+                response = self.handler_map["store"].handle(**kwargs)
             elif intent_name.startswith("product"):
-                json_res["fulfillmentMessages"][0]["text"]["text"].append(self.handler_map["product"].handle(**kwargs))
+                response = self.handler_map["product"].handle(**kwargs)
             elif intent_name.startswith("feedback"):
                 kwargs["sentiment"] = query_result["sentimentAnalysisResult"]
-                json_res["fulfillmentMessages"][0]["text"]["text"].append(self.handler_map["feedback"].handle(**kwargs))
+                response = self.handler_map["feedback"].handle(**kwargs)
             else: 
                 Log.d(Agent.__TAG, "Unknow intent")
                 raise DialogFlowException("Unknown intent")
+
+            # Check type
+            if isinstance(response, bytes):
+                    self.save_image_tmp(response, self.session_id)
+                    path = url_for("get_image", session_id = self.session_id)
+                    # Get the base url (replace with https and remove path /)
+                    base_url = request.base_url.replace("http", "https")[:-1]
+                    full_path = f"{base_url}{path}"
+                    Log.d(Agent.__TAG, full_path)
+                    json_res = {
+                        "richContent": [
+                            [
+                                {
+                                    "type": "image",
+                                    "rawUrl": full_path,
+                                    "accessibilityText": "Directions" if intent_name.startswith("store") else "Nutritions"
+                                }
+                            ]
+                        ]
+                    }
+            else:
+                json_res["fulfillmentMessages"][0]["text"]["text"].append(response)
             return json_res
         except Exception as e:
             Log.e(Agent.__TAG, str(e))
             abort(500)
+
+    def save_image_tmp(self, image: bytes, id):
+        path = f"/tmp/image_{id}.png"
+        with open(path, "wb") as f:
+            f.write(image)
+        return path
+    
