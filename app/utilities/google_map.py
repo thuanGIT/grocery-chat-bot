@@ -13,7 +13,7 @@ gmaps = gm.Client(key=__API_KEY)
 
 Log.d("Google MAP API", "Google MAP API client intialized.")
 
-class GoogleMapDrirection:
+class GoogleMapDirection:
     # Log tag
     __TAG = __name__
 
@@ -40,10 +40,10 @@ class GoogleMapDrirection:
         direction_result = gmaps.directions(src, dest, departure_time=departure_time, mode=mode)
 
         if len(direction_result) < 1:
-            Log.e(GoogleMapDrirection.__TAG, "Get direction unsuccessfully.")
+            Log.e(GoogleMapDirection.__TAG, "Get direction unsuccessfully.")
             return None
         else:
-            Log.i(GoogleMapDrirection.__TAG, "Get direction successfully.")
+            Log.i(GoogleMapDirection.__TAG, "Get direction successfully.")
             return direction_result[0]["overview_polyline"]["points"]
 
 class GoogleMapStatic:
