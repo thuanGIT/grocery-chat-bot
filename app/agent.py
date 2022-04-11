@@ -82,17 +82,23 @@ class Agent:
                     base_url = request.base_url.replace("http", "https")[:-1]
                     full_path = f"{base_url}{path}"
                     Log.d(Agent.__TAG, full_path)
-                    json_res = {
-                        "richContent": [
-                            [
-                                {
-                                    "type": "image",
-                                    "rawUrl": full_path,
-                                    "accessibilityText": "Directions" if intent_name.startswith("store") else "Nutritions"
-                                }
-                            ]
-                        ]
-                    }
+                    json_res["fulfillmentMessages"].append(
+                        {
+                            "payload": {
+                                "richContent": [
+                                    [
+                                        {
+                                            "rawUrl": full_path,
+                                            "type": "image",
+                                            "accessibilityText": "Directions" if intent_name.startswith("store") else "Nutritions"
+                                        }
+                                    ]
+                                ]
+                            }
+                        }
+                    )
+                    # Add a simple message
+                    json_res["fulfillmentMessages"][0]["text"]["text"].append("Here you are!")                    
             else:
                 json_res["fulfillmentMessages"][0]["text"]["text"].append(response)
             return json_res
