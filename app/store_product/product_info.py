@@ -6,8 +6,8 @@ class ProductInfoHandler(BaseHandler):
     """A class used to represent a mini-agent to handle product queries.
     """
 
-    def __init__(self) -> None:
-        super().__init__()
+    def __init__(self, session_id) -> None:
+        super().__init__(session_id=session_id)
 
     def handle(self, **kwargs):
         # Get the intent name & parameters
