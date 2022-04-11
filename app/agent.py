@@ -10,16 +10,7 @@ from app.utilities.logs import Log
 # Define the project id
 PROJECT_ID = os.getenv("PROJECT_ID")
 class Agent:
-    """The main agent to facilitate the conversation with customers. Its backend is set up
-    with mini-agents and Diagflow API.
-    
-    Attributes:
-        session_id: Unique session id for each conversation
-        session_client: session client object for dialogflow
-        language_code: language code for dialogflow, default to en-US
-        session: session path for dialogflow
-        intents: dictionary of current intents the bot handles
-        tolerant_count: Counts of undetected intents
+    """The main agent to run handler pipeline for generating a response
     """
     # Log TAG
     __TAG = __name__
@@ -36,6 +27,17 @@ class Agent:
         }
 
     def process(self, query_result):
+        """Process the query json.
+
+        Args:
+            query_result (dict): The parsed query json.
+
+        Raises:
+            DialogFlowException: If unknown intent is found.
+
+        Returns:
+            dict: The response in dictionary (called with jsonify in caller)
+        """
         try:
             # Get the intent's display name
             intent_name = str(query_result["intent"]["displayName"])
