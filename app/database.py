@@ -83,7 +83,6 @@ class Database:
             "password": POSTGRES_PASSWORD, 
             "host": POSTGRES_HOSTNAME,
         }
-        print(config)
         return config
 
     def from_result_to_tuples(self, cursor):
