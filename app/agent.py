@@ -66,7 +66,7 @@ class Agent:
                 if sub_intent == "done":
                     for _, handler in self.handler_map.items():
                         handler.dispose()
-                response = query_result["fulfillmentMessages"][0].text.text
+                response = query_result["fulfillmentMessages"][0]["text"]["text"]
             elif intent_name.startswith("store"):
                 response = self.handler_map["store"].handle(**kwargs)
             elif intent_name.startswith("product"):
