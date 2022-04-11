@@ -1,4 +1,5 @@
 import os
+from app.others.feedback_handler import FeedbackHandler
 from flask import abort
 from app.store_product.product_info import ProductInfoHandler
 from app.store_product.store_info import StoreInfoHandler
@@ -30,7 +31,8 @@ class Agent:
         # Handlers
         self.handler_map = {
             "store": StoreInfoHandler(session_id=session_id),
-            "product": ProductInfoHandler(session_id=session_id)
+            "product": ProductInfoHandler(session_id=session_id),
+            "feedback": FeedbackHandler(session_id=session_id)
         }
 
     def process(self, query_result):
@@ -62,6 +64,9 @@ class Agent:
                 json_res["fulfillmentMessages"][0]["text"]["text"].append(self.handler_map["store"].handle(**kwargs))
             elif intent_name.startswith("product"):
                 json_res["fulfillmentMessages"][0]["text"]["text"].append(self.handler_map["product"].handle(**kwargs))
+            elif intent_name.startswith("feedback"):
+                kwargs["sentiment"] = query_result["sentimentAnalysisResult"]
+                json_res["fulfillmentMessages"][0]["text"]["text"].append(self.handler_map["feedback"].handle(**kwargs))
             else: 
                 Log.d(Agent.__TAG, "Unknow intent")
                 raise DialogFlowException("Unknown intent")
