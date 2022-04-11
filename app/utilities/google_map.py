@@ -19,7 +19,7 @@ class GoogleMapDirection:
 
     def __init__(self):
         self.id = str(datetime.now()).encode("utf-8").hex()
-        Log.d(GoogleMapStatic.__TAG, f"GoogleMapDirection instance #{self.id} initalialized.")
+        Log.d(GoogleMapDirection.__TAG, f"GoogleMapDirection instance #{self.id} initalialized.")
 
     def get_direction_path(self, src, dest, departure_time, mode="driving"):
         """Get the direction from one place to another.
@@ -116,7 +116,7 @@ class GoogleMapStatic:
             "visible": f"{origin_lat},{origin_lng}", # Set the origin visible
             "markers": f"color:red|{origin_lat},{origin_lng}", # Mark the destination,
             "path": f"enc:{path}",
-            "key": __API_KEY
+            "key": os.getenv("MAP_API_KEY")
         }
         response = requests.request(
             method="GET", 
