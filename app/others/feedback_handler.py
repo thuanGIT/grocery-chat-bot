@@ -8,5 +8,5 @@ class FeedbackHandler(BaseHandler):
 
     def handle(self, **kwargs):
         # Get the sentiment
-        sentiment_score = kwargs["queryTextSentiment"]["score"]
+        sentiment_score = kwargs["sentiment"]["queryTextSentiment"]["score"]
         return "Sorry to hear that!" if sentiment_score <= 0 else "That's great! Thank you for your feedback!"
