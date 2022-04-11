@@ -1,49 +1,40 @@
-from http.client import HTTPException
+from flask import Flask, jsonify, abort, request
 from app.agent import Agent
-from flask import Flask, jsonify, abort
-from datetime import datetime
 from app.utilities.logs import Log
+import base64
+import os
+
+# Get authentications from env variables
+AUTH_USER = os.getenv("AUTH_USER")
+AUTH_PASSWORD = os.getenv("AUTH_PASSWORD")
 
 # Create a flask app
 app = Flask(__name__)
 app.config["TAG"] = "Flask App"
 app.config["AGENTS"] = dict()
+app.config["AUTH"] = f"{AUTH_USER}:{AUTH_PASSWORD}"
 
-@app.route("/")
-def init_conversation():
-  # Create a unique identifier
-  session_id = str(datetime.now()).encode("utf-8").hex()
-  app.config["AGENTS"][session_id] = Agent(session_id=session_id)
-
-  # Logging
-  Log.d(app.config["TAG"], f"Conversation id#{session_id} is initialized")
-
-  return jsonify({
-    "session_id": session_id,
-    "welcome_message": "Hello, welcome to the official chatbot of The Store. How can I help you today?"
-    })
-
-@app.route("/<session_id>")
-def receive_message(session_id):
-  try:
+@app.route("/", methods=["POST"])
+def webhook():
+  # Get authentication values
+  auth = base64.b64decode(request.headers.get("Authorization").split(" ")[1])
+  # Check auth
+  if auth.decode("utf-8") == app.config["AUTH"]:
+    # Get the sessions
+    session_id = str(request.json["session"]).split("/")[-1]
     # Get the agent
-    agent = app.config["AGENTS"][session_id]
-
-    # Logging
-    Log.i(app.config["TAG"], "Agent found!")
-
-    # TODO: Get the agent to process message
-  except Exception as e:
-    if e is HTTPException:
-      raise e
-    Log.e(app.config["TAG"], str(e))
+    agent = app.config["AGENTS"].setdefault(session_id, Agent(session_id=session_id))
+    # Process the request json and return the response
+    return agent.process(request.json["queryResult"])
+  else:
     abort(400)
-    
     
 @app.errorhandler(500)
 def handle_server_error(e):
+  Log.e(app.config["TAG"], str(e))
   return {}, 500
 
 @app.errorhandler(400)
 def handle_client_error(e):
+  Log.e(app.config["TAG"], str(e))
   return jsonify({"error": "Bad Request!"}), 400
