@@ -1,6 +1,7 @@
 from pytest import param
 from app.base_handler import BaseHandler
 from app.error import SQLException
+from app.utilities.google_map import GoogleMapDirection, GoogleMapStatic, GoogleMapGeoCoding
 
 class StoreInfoHandler(BaseHandler):
     """A class used to represent a mini-agent to handle store queries.
@@ -8,6 +9,7 @@ class StoreInfoHandler(BaseHandler):
 
     def __init__(self, session_id) -> None:
         super().__init__(session_id=session_id)
+        self.source = None
 
     def handle(self, **kwargs):
         # Get the intent name & parameters
@@ -17,12 +19,21 @@ class StoreInfoHandler(BaseHandler):
         # Get the sub-intent
         sub_intent = intent_name[intent_name.index(".") + 1:]
 
-        if sub_intent == "location":
-            # Get action
-            action = params["store_action_location"]
-            if action == "address":
-                return self.get_address()
-            else: ... # TODO: Add handler for direcion
+        if sub_intent.startswith("location"):
+            if sub_intent == "location - yes":
+                return self.get_direction(source=self.source)
+            else:  # Just location
+                # Get action
+                action = params["store_action_location"]
+                if action == "address":
+                    return self.get_address()
+                else: # Action = directions
+                    source_address = params["address"]
+                    if len(str(source_address)) > 0:
+                        self.source = str(source_address)
+                        return "Would you want a direction to the store from here?"
+                    else:
+                        return "Please tell me your departure location."
         elif sub_intent == "open_hours":
             # Get hours
             hours = self.get_hours().split("-")
@@ -77,3 +88,29 @@ class StoreInfoHandler(BaseHandler):
         """
         results = self.db.execute("SELECT PhoneNumber FROM Store;")
         return list(results)[0][0]
+
+    def get_direction(self, source):
+        """Get the direction to store.
+
+        Args:
+            source (str): The source address
+
+        Returns:
+            bytes: The image showing the direction.
+        """
+        gm_direction = GoogleMapDirection() # Create a GoogleMapDirection instance
+
+        # Call the method to the encoded path to draw on a static map image.
+        path_str = gm_direction.get_direction_path(
+            source, 
+            self.get_address(), 
+            mode="driving")
+
+        # Decode source address
+        gm_geo = GoogleMapGeoCoding() # Create a GoogleMapGeoCoding instance
+        coordinates = gm_geo.get_geocoding(source)
+
+        gm_static = GoogleMapStatic() # Create a GoogleMapStatic instance
+        return gm_static.get_map_path_snapshot(coordinates["lat"], coordinates["lng"], path_str, size=(512, 512), maptype="roadmap")
+        
+        
