@@ -3,18 +3,18 @@ P0000,Apple,1,Fruit,TRUE
 P0001,Banana,1.25,Fruit,TRUE
 P0002,Corn,0.5,Fruit,TRUE
 P0003,Dice,2.5,Toy,TRUE
-P0004,Eggs,0.86,Diary,TRUE
+P0004,Egg,0.86,Diary,TRUE
 P0005,Fudge,3.1,Sweet,TRUE
-P0006,Grapes,1.9,Fruit,TRUE
+P0006,Grape,1.9,Fruit,TRUE
 P0007,Honey,2.37,Sweet,TRUE
 P0008,Ice Cream,2.5,Sweet,TRUE
 P0009,Jelly,1.6,Sweet,TRUE
 P0010,Kiwi,0.99,Fruit,FALSE
 P0011,Lamb,7.99,Meat,FALSE
-P0012,M&M's,1.97,Sweet,TRUE
-P0013,Nilla Wafers,2.29,Sweet,TRUE
-P0014,Oreos,2.01,Sweet,FALSE
-P0015,Peaches,1.99,Fruit,TRUE
+P0012,M&M,1.97,Sweet,TRUE
+P0013,Nilla Wafer,2.29,Sweet,TRUE
+P0014,Oreo,2.01,Sweet,FALSE
+P0015,Peach,1.99,Fruit,TRUE
 P0016,Tivo,449.99,Electronics,TRUE
 P0017,Television,424.99,Electronics,TRUE
 P0018,Microwave,99.99,Electronics,TRUE
