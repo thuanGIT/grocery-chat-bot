@@ -1,18 +1,15 @@
 language: python
-jobs:
-  include:
-  - name: Python 3.8.0 on Xenial Linux # Default OS if not specified
-    python: 3.8 # this works for Linux but is ignored on macOS or Windows
+python: # Ubuntu Xenial 16.04 default
+  - "3.8"
 before_install:
 - pip3 install --upgrade pip
-env:
 install:
-- pip3 install -r requirements.txt # all three OSes agree about 'pip3'
-env: 
-  - POSTGRES_USER: postgres
-  - POSTGRES_PASSWORD: ""
-  - POSTGRES_HOSTNAME: localhost
-  - POSTGRES_DB: travis_ci_test
+- pip3 install -r requirements.txt
+env:
+  - POSTGRES_USER=postgres
+  - POSTGRES_PASSWORD=""
+  - POSTGRES_HOSTNAME=localhost
+  - POSTGRES_DB=travis_ci_test
 services:
   - postgresql: 14
 before_script:
