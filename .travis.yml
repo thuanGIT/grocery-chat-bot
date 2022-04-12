@@ -14,5 +14,5 @@ env:
     - POSTGRES_HOSTNAME=localhost
     - POSTGRES_DB=travis_ci_test
 before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres
+  - psql -c 'create database travis_ci_test;' -U postgres -p 5433
 script: pytest
