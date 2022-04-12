@@ -7,10 +7,9 @@
   <p align="center">
     Say hi to Friday! Our personal grocery assistant!
     <br />
-    <a href="https://github.com/github_username/repo_name"><strong>Explore the docs »</strong></a>
-    <br />
-    <a href="#">View Demo</a>
-    ·
+    <!-- <a href="#"><strong>Explore the docs »</strong></a> -->
+    <!-- <a href="#">View Demo</a> -->
+    <!-- · -->
     <a href="https://github.com/thuanGIT/grocery-chat-bot/issues">Report Bug</a>
     ·
     <a href="https://github.com/thuanGIT/grocery-chat-bot/pulls">Request Feature</a>
