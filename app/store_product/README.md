@@ -82,10 +82,10 @@ kwargs = {
     "params": query_result["parameters"]
 }
 
-store_handler = ProductInfoHandler(session_id=session_id)
+product_handler = ProductInfoHandler(session_id=session_id)
 
 # Could be str for text or bytes for image
-response = store_handler.handle(**kwargs)
+response = product_handler.handle(**kwargs)
 ```
 
 ## License
