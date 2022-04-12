@@ -2,7 +2,7 @@ language: python
 python: # Ubuntu Xenial 16.04 default
   - "3.8"
 services:
-  - postgresql: 14
+  - postgresql:
 before_install:
 - pip3 install --upgrade pip
 install:
