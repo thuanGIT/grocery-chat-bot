@@ -37,7 +37,7 @@
 ## About The Project
 
 <div align="center">
-  <img src="images/sample_run.png" alt="Logo" width="300" height="300">
+  <img src="images/sample_run.png" alt="Logo">
 </div>
 </br>
 
