@@ -6,7 +6,7 @@ For more information on system architecture, database and APIs, check out [app/R
 
 ## Directory structure
 
-Here's the directory structure of the store_product package.
+Here's the directory structure of the others package to handle extra topics than store and product.
 
 ```bash
 .
