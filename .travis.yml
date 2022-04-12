@@ -1,17 +1,18 @@
 language: python
 python: # Ubuntu Xenial 16.04 default
   - "3.8"
+services:
+  - postgresql: 14
 before_install:
 - pip3 install --upgrade pip
 install:
 - pip3 install -r requirements.txt
 env:
-  - POSTGRES_USER=postgres
-  - POSTGRES_PASSWORD=""
-  - POSTGRES_HOSTNAME=localhost
-  - POSTGRES_DB=travis_ci_test
-services:
-  - postgresql: 14
+  global:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=""
+    - POSTGRES_HOSTNAME=localhost
+    - POSTGRES_DB=travis_ci_test
 before_script:
   - psql -c 'create database travis_ci_test;' -U postgres
 script: pytest
