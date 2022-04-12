@@ -1,5 +1,5 @@
 import os
-from app.others.feedback_handler import FeedbackHandler
+from app.others.feedback import FeedbackHandler
 from flask import abort, url_for, request
 from app.store_product.product_info import ProductInfoHandler
 from app.store_product.store_info import StoreInfoHandler
