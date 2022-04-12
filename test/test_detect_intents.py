@@ -1,19 +1,57 @@
 import pytest
-from app.bot import Bot
-from google.cloud import dialogflow
+from app.agent import Agent
+from app.utilities.logs import Log
+
+# Define a sample request data
+sample_req = {
+  "responseId": "23ed0a46-be5a-4c51-af76-60d875b46cae-7b9a0dae",
+  "queryResult": {
+    "queryText": "price of banana",
+    "parameters": {
+      "product": "banana"
+    },
+    "allRequiredParamsPresent": True,
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            ""
+          ]
+        }
+      }
+    ],
+    "outputContexts": [
+      {
+        "name": "projects/grocery-chat-bot-v1/agent/sessions/0cbc1ecd-bf23-bcf8-a1f4-68e1f5effe19/contexts/__system_counters__",
+        "parameters": {
+          "no-input": 0,
+          "no-match": 0,
+          "product": "banana",
+          "product.original": "banana"
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/grocery-chat-bot-v1/agent/intents/fce457d3-3975-481e-84e6-f253b4d88021",
+      "displayName": "product.price"
+    },
+    "intentDetectionConfidence": 1,
+    "languageCode": "en"
+  },
+  "originalDetectIntentRequest": {
+    "source": "DIALOGFLOW_CONSOLE",
+    "payload": {}
+  },
+  "session": "projects/grocery-chat-bot-v1/agent/sessions/0cbc1ecd-bf23-bcf8-a1f4-68e1f5effe19"
+}
 
 @pytest.mark.intent_detection
 class TestIntentRouting:
+    def clean_up():
+        Log.d(__name__, "Clean up agent")
 
     @pytest.fixture
-    def bot(self):
-        return Bot()
+    def agent(self):
+        return Agent(session_id="123456789", clean_up=self.clean_up)
 
-    def test_detect_intent_texts(self,bot):
-        assert bot.detect_intent_texts("hello").intent.display_name == "Default Welcome Intent", "Default Welcome Intent failed"
-        assert bot.detect_intent_texts("bye").intent.display_name == "Done-conversation", "Done-conversation failed"
-        assert bot.detect_intent_texts("What is the price of an apple ?").intent.display_name == "product-price", "product-info failed"
-        assert bot.detect_intent_texts("Where is your store ?").intent.display_name == "store-info", "store-address-info failed"
-        assert bot.detect_intent_texts("When do you open ?").intent.display_name == "store-info", "store-time-info failed"
-        assert bot.detect_intent_texts("I want to return my order").intent.display_name == "refund-request", "refund-request failed"
     

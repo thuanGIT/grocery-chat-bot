@@ -1,0 +1,8 @@
+{
+  "query_input": {
+      "text": {
+          "text": "Hi",
+          "language_code": "en-US"
+      }
+  }
+}
